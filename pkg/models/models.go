@@ -2,20 +2,22 @@ package models
 
 // ---> Configuration
 
-type channel struct {
+type Channel struct {
 	IdChannel    string `json:"id_channel"`
 	AllowedNames string `json:"allowed_names"`
-	Send         string `json:"send"`
-	Read         string `json:"read"`
+	Ports        string `json:"ports"`
+	NewConn      bool   `json:"new"`
 }
 
 type Config struct {
-	Name     string    `json:"name"`
-	Channels []channel `json:"channels"`
+	Name      string    `json:"name"`
+	Ancillary string    `json:"ancillary"`
+	Channels  []Channel `json:"channels"`
+	Buffer    int       `json:"buffer"`
 }
 
 type IConfig interface {
-	Read(path string) (Config, error)
+	Get(path string) (*Config, error)
 }
 
 // ---> Client
@@ -38,10 +40,6 @@ type ICli interface {
 
 // ---> Proxy
 
-type TcpProxy struct {
-	
-}
-
-type ITcpProxy interface {
+type IListener interface {
 	Listen(port string) error
 }
