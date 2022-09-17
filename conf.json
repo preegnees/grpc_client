@@ -1,11 +1,13 @@
 {
     "name": "cli1",
+    "ancillary": "44401:44402",
+    "buffer": 4096,
     "channels": [
         {
             "id_channel": "qwert1234",
             "allowed_names": "cli2, cli3",
-            "send": ":55501",
-            "read": ":55502"
+            "ports": "33301:33302",
+            "new": false
         }
     ]
 }
