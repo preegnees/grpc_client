@@ -1,0 +1,11 @@
+{
+    "name": "cli1",
+    "channels": [
+        {
+            "id_channel": "qwert1234",
+            "allowed_names": "cli2, cli3",
+            "send": ":55501",
+            "read": ":55502"
+        }
+    ]
+}
