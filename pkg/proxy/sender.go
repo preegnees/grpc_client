@@ -34,6 +34,7 @@ func (p *Proxy) send(ctx context.Context) error {
 				return nil
 			default:
 				buffer := make([]byte, p.bufferSize)
+				defer func() {buffer = nil}()
 				_, err := p.reader.Read(buffer)
 				if err != nil {
 					return p.printErr(e.ErrReadFromReader, err)
@@ -42,7 +43,6 @@ func (p *Proxy) send(ctx context.Context) error {
 				if err != nil {
 					return p.printErr(e.ErrWriteToWriterFromTcpSender, err)
 				}
-				buffer = nil
 			}
 		}
 	}
