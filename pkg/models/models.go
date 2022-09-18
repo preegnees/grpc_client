@@ -1,5 +1,7 @@
 package models
 
+import "io"
+
 // ---> Configuration
 
 type Channel struct {
@@ -14,6 +16,8 @@ type Config struct {
 	Ancillary string    `json:"ancillary"`
 	Channels  []Channel `json:"channels"`
 	Buffer    int       `json:"buffer"`
+	Server    string    `json:"server"`
+	AllPorts  []string
 }
 
 type IConfig interface {
@@ -31,15 +35,11 @@ type ClientConf struct {
 	IdChannel         string
 	Name              string
 	AllowedNames      string
+	Reader            *io.PipeReader
+	Writer            *io.PipeWriter
 }
 
 type ICli interface {
 	Run(ClientConf) error
 	Stop()
-}
-
-// ---> Proxy
-
-type IListener interface {
-	Listen(port string) error
 }
