@@ -63,8 +63,8 @@ func runProxy(conf m.Config, log *logrus.Logger) error {
 	// служебный канал потом реализовать
 
 	for _, v := range conf.Channels {
-		prFromRpcClient, pwToProxyClient := io.Pipe()
-		prFromProxyServer, pwToRpcClient := io.Pipe()
+		prToTcpSender, pwFromRecvRpc := io.Pipe()
+		prToRpcSender, pwFromRecvTcp := io.Pipe()
 		portRead := strings.Split(v.Ports, " ")[0]
 		portWrite := strings.Split(v.Ports, " ")[1]
 
@@ -72,8 +72,8 @@ func runProxy(conf m.Config, log *logrus.Logger) error {
 			log,
 			portWrite,
 			portRead,
-			prFromRpcClient,
-			pwToRpcClient,
+			prToTcpSender,
+			pwFromRecvTcp,
 			conf.Buffer,
 		)
 
@@ -81,7 +81,7 @@ func runProxy(conf m.Config, log *logrus.Logger) error {
 
 		proxy.Run(ctx, errCh)
 
-		go func(v m.Channel, eCh chan error, prFromProxyServer *io.PipeReader, pwToProxyClient *io.PipeWriter) {
+		go func(v m.Channel, eCh chan error) {
 			c := cli.New()
 			err := c.Run(m.ClientConf{
 				Addr:              conf.Server,
@@ -92,8 +92,8 @@ func runProxy(conf m.Config, log *logrus.Logger) error {
 				IdChannel:         v.IdChannel,
 				Name:              conf.Name,
 				AllowedNames:      fmt.Sprintf("%s,%s", v.AllowedNames, conf.Name),
-				Reader:            prFromProxyServer,
-				Writer:            pwToProxyClient,
+				Reader:            prToRpcSender,
+				Writer:            pwFromRecvRpc,
 			})
 			if err != nil {
 				if eCh != nil {
@@ -103,7 +103,7 @@ func runProxy(conf m.Config, log *logrus.Logger) error {
 				return
 			}
 			return
-		}(v, errCh, prFromProxyServer, pwToProxyClient)
+		}(v, errCh)
 	}
 
 	select {

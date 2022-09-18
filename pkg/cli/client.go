@@ -160,9 +160,6 @@ func (c *rpcClient) startStream() {
 	defer stream.CloseSend()
 	c.logger.Println("Канал подключен")
 
-	timer := time.NewTicker(500 * time.Millisecond) //
-	defer timer.Stop() //
-
 	go func() {
 		for {
 			in, err := stream.Recv()
@@ -179,15 +176,30 @@ func (c *rpcClient) startStream() {
 				break
 			}
 
-			c.logger.Printf("Received Ping message: %s\n", in.Bs)
+			// c.logger.Printf("Received Ping message: %s\n", in.Bs)
+			_, err = c.cnf.Writer.Write(in.Bs)
+			if err != nil {
+				log.Println(fmt.Errorf("$Ошибка при писании в врайтер, err:=%v", err.Error()))
+				break
+			}
 		}
 	}()
 
 	for {
 		select {
-		case <-timer.C:
-			err := stream.Send(&pb.Message{
-				Bs: []byte(fmt.Sprintf("hello world, this is %s", c.cnf.Name)),
+		case <-ctx.Done():
+			c.logger.Println("Канал закрыт")
+			return
+		default:
+			buf := make([]byte, 4096)
+			defer func ()  {buf = nil}()
+			_, err := c.cnf.Reader.Read(buf)
+			if err != nil {
+				log.Println(fmt.Errorf("$Ошибка при чтении из ридера, err:=%v", err))
+				return
+			}
+			err = stream.Send(&pb.Message{
+				Bs: []byte(buf),
 			})
 			if err == io.EOF {
 				log.Println(fmt.Errorf("$Ошибка EOF при писании, err:=%v", err))
@@ -196,9 +208,6 @@ func (c *rpcClient) startStream() {
 			if err != nil {
 				c.errCh <- fmt.Errorf("$Ошибка при чтении писании, err:=%v", err)
 			}
-		case <-ctx.Done():
-			c.logger.Println("Канал закрыт")
-			return
 		}
 	}
 }
