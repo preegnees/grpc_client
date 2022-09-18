@@ -16,12 +16,14 @@ func (p *Proxy) listen(ctx context.Context) error {
 	}
 	defer listen.Close()
 	defer p.writer.Close()
+	p.log.Debugf("Прослушивание порта %s", p.recvPort)
 
 	conn, err := listen.Accept()
 	if err != nil {
 		return p.printErr(e.ErrAcceptTcpListen, err)
 	}
 	defer conn.Close()
+	p.log.Debugf("Подключение к порту %s", p.recvPort)
 
 	for {
 		select {
@@ -33,11 +35,11 @@ func (p *Proxy) listen(ctx context.Context) error {
 			if err != nil {
 				return p.printErr(e.ErrReadFromTcpConn, err)
 			}
-
 			_, err = p.writer.Write(buffer)
 			if err != nil {
 				return p.printErr(e.ErrWriteToWriterFromTcpListener, err)
 			}
+			buffer = nil
 		}
 	}
 }
