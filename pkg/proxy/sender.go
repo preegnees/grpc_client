@@ -4,24 +4,24 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"strings"
-	"time"
+	// "strings"
+	// "time"
 
 	e "streaming/pkg/errors"
 )
 
 func (p *Proxy) send(ctx context.Context) error {
 
-	var count int = 0
-	for {
+	// var count int = 0
+	// for {
 		c, err := net.Dial("tcp", fmt.Sprintf(":%s", p.sendPort))
 		if err != nil {
-			if strings.Contains(err.Error(), "No connection could be made because") {
-				time.Sleep(2 * time.Second)
-				p.log.Error(fmt.Errorf("Подключение к серверу для отправки данных, попытка:%d", count))
-				count++
-				continue
-			}
+			// if strings.Contains(err.Error(), "No connection could be made because") {
+				// time.Sleep(2 * time.Second)
+				// p.log.Error(fmt.Errorf("Подключение к серверу для отправки данных, попытка:%d", count))
+				// count++
+				// continue
+			// }
 			return p.printErr(e.ErrConnToPort, err)
 		}
 		defer c.Close()
@@ -44,6 +44,6 @@ func (p *Proxy) send(ctx context.Context) error {
 					return p.printErr(e.ErrWriteToWriterFromTcpSender, err)
 				}
 			}
-		}
+		// }
 	}
 }
