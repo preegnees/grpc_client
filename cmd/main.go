@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"strings"
+	"os/signal"
+    "syscall"
 
 	cli "streaming/pkg/cli"
 	cnf "streaming/pkg/configuration"
@@ -105,6 +107,13 @@ func runProxy(conf m.Config, log *logrus.Logger) error {
 			return
 		}(v, errCh)
 	}
+
+	c := make(chan os.Signal)
+    signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+    go func() {
+        <-c
+        os.Exit(1)
+    }()
 
 	select {
 	case err := <-errCh:
