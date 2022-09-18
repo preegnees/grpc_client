@@ -20,17 +20,18 @@ type Proxy struct {
 func New(logger *logrus.Logger, sPort, rPort string, r *io.PipeReader, w *io.PipeWriter, bufferSize int) Proxy {
 
 	return Proxy{
-		log:      logger,
-		sendPort: sPort,
-		recvPort: rPort,
-		reader:   r,
-		writer:   w,
+		log:        logger,
+		sendPort:   sPort,
+		recvPort:   rPort,
+		reader:     r,
+		writer:     w,
 		bufferSize: bufferSize,
 	}
 }
 
 func (p *Proxy) Run(ctx context.Context, errCh chan<- error) {
 
+	p.log.Debugf("Запущена функция Run() с sendPort=%s, recvPort=%s", p.sendPort, p.recvPort)
 	go func(ctx context.Context, eCh chan<- error) {
 		err := p.listen(ctx)
 		if err != nil {

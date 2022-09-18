@@ -61,6 +61,9 @@ func Test_ConnectToServerIfHeIsAvailable(t *testing.T) {
 		}
 		fmt.Printf("круг %d\n", count)
 		count++
+		if count > 5 {
+			return
+		}
 	case err := <-errCh:
 		fmt.Println(err)
 		cancel()
