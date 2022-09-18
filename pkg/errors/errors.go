@@ -23,3 +23,11 @@ var ErrInvalidName = errors.New("Err invalid name, name is empty")
 var ErrInvalidChannels = errors.New("Err invalid channels, channels is empty")
 
 var ErrInvalidIdChannel = errors.New("Err invalid id_channel, id_channel is empty")
+
+var ErrWriteToWriterFromTcpListener = errors.New("Err write to io.writer from tcpListener")
+
+var ErrWriteToWriterFromTcpSender = errors.New("Err write to io.writer from tcpListener")
+
+var ErrConnToPort =  errors.New("Err connect to port")
+
+var ErrReadFromReader = errors.New("Err read from reader")
