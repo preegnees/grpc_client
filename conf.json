@@ -1,13 +1,20 @@
 {
     "name": "cli1",
-    "ancillary": "44401:44402",
+    "server": "localhost:55501",
+    "ancillary": "44401 44402",
     "buffer": 4096,
     "channels": [
         {
             "id_channel": "qwert1234",
             "allowed_names": "cli2, cli3",
-            "ports": "33301:33302",
+            "ports": "33001 33002",
             "new": false
+        },
+        {
+            "id_channel": "qwert1234",
+            "allowed_names": "cli2, cli3",
+            "ports": "33011 33012",
+            "new": true
         }
     ]
 }

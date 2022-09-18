@@ -25,6 +25,8 @@ func New(logger *logrus.Logger) configuration {
 	}
 }
 
+// добавить потом проверку или пинг сервера
+
 func (c *configuration) Get(path string) (*m.Config, error) {
 
 	conf := m.Config{}
@@ -59,6 +61,8 @@ func (c *configuration) Get(path string) (*m.Config, error) {
 		return nil, c.printErr(e.ErrInvalidChannels, nil)
 	}
 
+	conf.AllPorts = append(conf.AllPorts, conf.Ancillary)
+
 	for _, v := range conf.Channels {
 		if len(v.IdChannel) < 8 {
 			return nil, c.printErr(e.ErrInvalidIdChannel, nil)
@@ -67,6 +71,7 @@ func (c *configuration) Get(path string) (*m.Config, error) {
 		if err != nil {
 			return nil, c.printErr(e.ErrInvalidPorts, err)
 		}
+		conf.AllPorts = append(conf.AllPorts, v.Ports)
 	}
 
 	return &conf, nil
@@ -81,12 +86,12 @@ func (c *configuration) printErr(myerr error, err error) error {
 
 func (c *configuration) validPort(ports string) error {
 
-	var len int = len(strings.Split(ports, ":"))
+	var len int = len(strings.Split(ports, " "))
 	if len != 2 {
 		return fmt.Errorf("Err with ports:%s", ports)
 	}
 
-	p1, p2 := strings.Split(ports, ":")[0], strings.Split(ports, ":")[1]
+	p1, p2 := strings.Split(ports, " ")[0], strings.Split(ports, " ")[1]
 	p1i, err := strconv.Atoi(p1)
 	if err != nil {
 		return err
